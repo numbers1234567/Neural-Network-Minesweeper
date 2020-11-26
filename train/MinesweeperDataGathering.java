@@ -34,7 +34,7 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
 
     public PrintWriter outWriter;
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         MinesweeperDataGathering dataUI = new MinesweeperDataGathering();
         dataUI.repaint();
     }
