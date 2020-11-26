@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JFrame;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
 
 
 /*
@@ -29,13 +32,17 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
     public static final int windowWidth=600;
     public static final int windowHeight=600;
 
-    public static void main(String[] args) {
+    public PrintWriter outWriter;
+
+    public static void main(String[] args) throws FileNotFoundException {
         MinesweeperDataGathering dataUI = new MinesweeperDataGathering();
         dataUI.repaint();
     }
 
-    MinesweeperDataGathering() {
+    MinesweeperDataGathering() throws IOException {
         super("Data collection");
+
+        outWriter = new PrintWriter(new FileWriter("train.txt", true));
 
         inter = new MinesweeperInterface();
         visibleGame = inter.new MinesweeperGame();
@@ -58,9 +65,29 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
     }
 
     /*
+    Write current minesweeper data
+
+    First, writes Minesweeper Data with every tile in visibleGame's player board added by 2.
+    Then, writes what tiles can be opened
+    */
+    public void writeCurrentData() {
+        System.out.println("Writing data!");
+        int[][] visible = visibleGame.getPlayerBoard();
+        for (int[] row : visible) {
+            for (int tile : row)
+                outWriter.append((tile + 2) + " ");
+            outWriter.append("\n");
+        }
+        for (boolean[] row : selectedSquares) {
+            for (boolean tile : row)
+                outWriter.append((tile ? 1 : 0)  + " ");
+            outWriter.append("\n");
+        }
+    }
+
+    /*
     Reveal all selected blocks. Return True if good and return False if mine selected
     */
-
     public boolean revealSelected() {
         int[][] minesBoard = inter.getBoard();
         for (int y=0; y<selectedSquares.length; y++) 
@@ -85,7 +112,7 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
         int y = e.getY()-23;
         int tileX = x*inter.getWidth()/windowWidth;
         int tileY = y*inter.getHeight()/(windowHeight-23);
-        System.out.println(tileX + " " + tileY);
+        
         select(tileX, tileY);
     }
     public void mouseClicked(MouseEvent e) {}
@@ -97,13 +124,21 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
     public void keyPressed(KeyEvent e) {}
     public void keyReleased(KeyEvent e) {
         if (e.getKeyChar() == 'q') {
+            // Check if current configuration is valid before writing
+            boolean selectedValid = true;
+            int[][] minesBoard = inter.getBoard();
+            for (int y=0; y<selectedSquares.length; y++) 
+                for (int x=0; x<selectedSquares[0].length; x++) 
+                    if (minesBoard[y][x] == -1 && selectedSquares[y][x]) selectedValid = false;
+            if (selectedValid) writeCurrentData();
             // Click everywhere
             revealSelected();
             repaint();
-            if (visibleGame.isSolved()) 
+            if (visibleGame.isSolved()) {
+                outWriter.close();
                 // Dispatch window close event
                 dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-
+            }
         }
     }
     public void keyTyped(KeyEvent e) {}
