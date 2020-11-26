@@ -1,7 +1,6 @@
 import java.lang.Math;
 import java.util.Queue;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 /*
 A basic interface to a minesweeper board.
@@ -14,32 +13,19 @@ The MinesweeperGame contains all the information available to the player
 */
 public class MinesweeperInterface {
     private int[][] board;
-
-    public static void main(String[] args) {
-        Scanner stdin = new Scanner(System.in);
-        MinesweeperInterface boardInterface = new MinesweeperInterface();
-        MinesweeperGame game = boardInterface.new MinesweeperGame();
-        int[] clickNext = new int[2];
-        do {
-            clickNext[0] = stdin.nextInt();
-            clickNext[1] = stdin.nextInt();
-            game.click(clickNext[0], clickNext[1]);
-            int[][] board = game.getPlayerBoard();
-            for (int[] row : board) {
-                for (int cell : row) {
-                    System.out.print(cell + " ");
-                    if (cell != -1) System.out.print(" ");
-                }
-                System.out.println();
-            }
-        } while (clickNext[0] != -1 && clickNext[1] != -1);
-    }
+    private int width;
+    private int height;
+    private int numMines;
 
     /* 
     Generates a Minesweeper board randomly with the given
      number of mines and the dimensions
     */
     public MinesweeperInterface(int width, int height, int mines) {
+        this.width = width;
+        this.height = height;
+        this.numMines = mines;
+
         board = new int[height][width];
         int minesAdded = 0;
 
@@ -69,6 +55,17 @@ public class MinesweeperInterface {
             }
         }
 
+    }
+
+    // Basic getters
+    public int getHeight() {return height;}
+    public int getWidth() {return width;}
+    public int getNumMines() {return numMines;}
+
+    public int[][] getBoard() {
+        int[][] newBoard = new int[board.length][];
+        for (int i=0; i<board.length; i++) newBoard[i] = board[i].clone();
+        return newBoard;
     }
 
     /*
@@ -133,19 +130,14 @@ public class MinesweeperInterface {
                     board[flooding[1]][flooding[0]] += 0;
                 } catch (IndexOutOfBoundsException e) {continue;}
                 
-                if (board[flooding[1]][flooding[0]] == 0) 
-                    if (possibleMoves[flooding[1]][flooding[0]] == 0) {
-                        // Flood adjacents next
-                        int[][] adjacent = {{flooding[0]-1, flooding[1]},
-                                            {flooding[0]+1, flooding[1]},
-                                            {flooding[0], flooding[1]-1},
-                                            {flooding[0], flooding[1]+1},
-                                            {flooding[0]-1, flooding[1]+1},
-                                            {flooding[0]+1, flooding[1]-1},
-                                            {flooding[0]-1, flooding[1]-1},
-                                            {flooding[0]+1, flooding[1]+1}};
-                        for (int[] adjacentBlock: adjacent) floodFillQueue.add(adjacentBlock);
-                    }
+                if (board[flooding[1]][flooding[0]] == 0 && 
+                    possibleMoves[flooding[1]][flooding[0]] == 0) 
+                    // Flood adjacents next
+                    for (int y=flooding[1]-1; y<flooding[1]+2; y++) {for (int x=flooding[0]-1; x<flooding[0]+2; x++){
+                        int pos[] = {x, y};
+                        floodFillQueue.add(pos);
+                    }}
+             
                 // Flood this now
                 possibleMoves[flooding[1]][flooding[0]] = 1;
                 // Update visible board
@@ -163,5 +155,23 @@ public class MinesweeperInterface {
             for (int i=0; i<board.length; i++) newVis[i] = visibleBoard[i].clone();
             return newVis;
         }
+        
+        // Basic getters
+        public int getHeight() {return height;}
+        public int getWidth() {return width;}
+        public int getNumMines() {return numMines;}
+
+        /*
+        What can I say? Returns true if the board is solved, false otherwise
+        */
+        public boolean isSolved() {
+            for (int y=0; y<board.length; y++)
+                for (int x=0; x<board.length; x++)
+                    // If there is an unopened box that doesn't contain a mine
+                    if (board[y][x] != -1 && visibleBoard[y][x] == -1) return false;
+
+            return true;
+        }
     }
+    
 }
