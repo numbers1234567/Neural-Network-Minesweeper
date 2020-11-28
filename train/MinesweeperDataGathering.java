@@ -74,13 +74,19 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
         System.out.println("Writing data!");
         int[][] visible = visibleGame.getPlayerBoard();
         for (int[] row : visible) {
-            for (int tile : row)
+            for (int tile : row) {
                 outWriter.append((tile + 2) + " ");
+                System.out.print(tile + " ");
+            }
+            System.out.println();
             outWriter.append("\n");
         }
         for (boolean[] row : selectedSquares) {
-            for (boolean tile : row)
+            for (boolean tile : row) {
                 outWriter.append((tile ? 1 : 0)  + " ");
+                System.out.print((tile ? 1 : 0) + " ");
+            }
+            System.out.println();
             outWriter.append("\n");
         }
     }
@@ -125,12 +131,12 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
     public void keyReleased(KeyEvent e) {
         if (e.getKeyChar() == 'q') {
             // Check if current configuration is valid before writing
-            boolean selectedValid = true;
             int[][] minesBoard = inter.getBoard();
             for (int y=0; y<selectedSquares.length; y++) 
                 for (int x=0; x<selectedSquares[0].length; x++) 
-                    if (minesBoard[y][x] == -1 && selectedSquares[y][x]) selectedValid = false;
-            if (selectedValid) writeCurrentData();
+                    if (minesBoard[y][x] == -1 && selectedSquares[y][x]) return;
+            
+            writeCurrentData();
             // Click everywhere
             revealSelected();
             repaint();
