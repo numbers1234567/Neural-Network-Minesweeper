@@ -11,11 +11,15 @@ The board member is represented as a 2-dimensional array. -1 means a mine,
 The MinesweeperGame contains all the information available to the player
  in a normal game of Minesweeper.
 */
-public class MinesweeperInterface {
+class MinesweeperInterface {
     private int[][] board;
     private int width;
     private int height;
     private int numMines;
+    
+    public static void main(String[] args) {
+        System.out.println("Hello world!");
+    }
 
     /* 
     Generates a Minesweeper board randomly with the given
