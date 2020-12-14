@@ -1,2 +1,2 @@
 # Neural-Network-Minesweeper
-My attempt at a convolutional neural network in Keras.
+My attempt at a convolutional neural network using deep Q learning in Keras.
