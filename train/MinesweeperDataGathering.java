@@ -118,8 +118,20 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
         int y = e.getY()-23;
         int tileX = x*inter.getWidth()/windowWidth;
         int tileY = y*inter.getHeight()/(windowHeight-23);
-        
-        select(tileX, tileY);
+        System.out.println(e.getButton());
+        switch (e.getButton()) {
+            case MouseEvent.BUTTON1:
+                // Mark for revealing
+                select(tileX, tileY);
+                break;
+            case MouseEvent.BUTTON3:
+                // Place flag
+                if (!selectedSquares[tileY][tileX]) {
+                    visibleGame.toggleFlag(tileX, tileY);
+                    repaint();
+                }
+                break;
+        }
     }
     public void mouseClicked(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
@@ -172,6 +184,10 @@ public class MinesweeperDataGathering extends JFrame implements MouseListener, K
             }
             else if (visBoard[y][x] == -1) {
                 g.drawString("X", (int)(xCoordIncrement*x + windowWidth/(2*gameWidth)),
+                                  (int)(yCoordIncrement*y + windowHeight/(2*gameHeight)));
+            }
+            else if (visBoard[y][x] == -2) {
+                g.drawString("F", (int)(xCoordIncrement*x + windowWidth/(2*gameWidth)),
                                   (int)(yCoordIncrement*y + windowHeight/(2*gameHeight)));
             }
         }

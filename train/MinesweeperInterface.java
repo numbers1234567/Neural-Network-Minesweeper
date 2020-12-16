@@ -16,10 +16,6 @@ class MinesweeperInterface {
     private int width;
     private int height;
     private int numMines;
-    
-    public static void main(String[] args) {
-        System.out.println("Hello world!");
-    }
 
     /* 
     Generates a Minesweeper board randomly with the given
@@ -175,6 +171,18 @@ class MinesweeperInterface {
                     if (board[y][x] != -1 && visibleBoard[y][x] == -1) return false;
 
             return true;
+        }
+
+        public void toggleFlag(int x, int y) {
+            if (visibleBoard[y][x] != -1 && visibleBoard[y][x] != -2) return;
+            if (visibleBoard[y][x] == -1) visibleBoard[y][x] = -2;
+            else visibleBoard[y][x] = -1;
+        }
+
+        public void setFlag(int x, int y, int hasMine) {
+            if (visibleBoard[y][x] != -2 || visibleBoard[y][x] != -1) return;
+            if (hasMine==0) visibleBoard[y][x] = -1;
+            else visibleBoard[y][x] = -2;
         }
     }
     
